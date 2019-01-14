@@ -151,6 +151,7 @@ export default ModelsTable.extend({
   },
 
   sortingWrapper(query, sortBy, sortDirection) {
+    console.log('sortingWrapper', query, sortBy, sortDirection);
     query[get(this, 'filterQueryParameters.sort')] = sortBy;
     query[get(this, 'filterQueryParameters.sortDirection')] = sortDirection;
 
@@ -204,6 +205,7 @@ export default ModelsTable.extend({
     },
 
     sort(column) {
+      console.log('sort', column);
       const sortMap = {
         none : 'asc',
         asc  : 'desc',
@@ -215,17 +217,22 @@ export default ModelsTable.extend({
         desc : ''
       };
       let sortedBy = get(column, 'sortedBy');
-      if (typeOf(sortedBy) === 'undefined') {
+      if (typeOf(sortedBy) === 'undefined' || !sortedBy) {
         sortedBy = get(column, 'propertyName');
       }
+      console.log('sortedBy', sortedBy, get(column, 'propertyName'), get(column, 'sortedBy'));
       if (!sortedBy) {
         return;
       }
 
       let currentSorting = get(column, 'sorting');
+      //  convert sortedBy key to dasherized form
+      let words = sortedBy.match(/[A-Za-z][a-z0-9]*/g) || [];
+      sortedBy = words.map(word => word.toLowerCase()).join('-');
       sortedBy = `${sortSign[currentSorting]}${sortedBy}`;
       let newSorting = sortMap[currentSorting.toLowerCase()];
       let sortingArgs = [column, sortedBy, newSorting];
+      console.log(sortingArgs);
       this._singleColumnSorting(...sortingArgs);
     }
 
